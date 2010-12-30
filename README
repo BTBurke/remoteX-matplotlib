@@ -1,0 +1,3 @@
+RemoteX is a simple client/server architecture that pickles Python matplotlib arguments and sends them to your local machine to be generate the graph.
+
+This library is meant to be used when development occurs on a remote machine, but exporting X11 is slow because it sends all the matplotlib GUI elements.
