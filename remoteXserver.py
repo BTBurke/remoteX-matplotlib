@@ -2,33 +2,49 @@
 
 from socket import *
 import pickle
+import thread
 import matplotlib.pyplot as plt
 
-class remoteXserver:
+#class remoteXserver:
 
-    def __init__(self, ip='', port=9898):
-        self.socketobj = socket(AF_INET, SOCK_STREAM)
-        self.socketobj.bind((ip,port))
-        self.socketobj.listen(5)
+def startserver(ip='', port=9898):
+    socketobj = socket(AF_INET, SOCK_STREAM)
+    socketobj.bind((ip,port))
+    socketobj.listen(5)
 
         
+    while True:
+        connection, address = socketobj.accept()
+        savstring = ''
         while True:
-            connection, address = self.socketobj.accept()
-            savstring = ''
-            while True:
-                cmdstring = connection.recv(1024)
-                savstring += cmdstring
-              #  print cmdstring
-               # print savstring
-                if not cmdstring: break
-            connection.close()
-            if savstring:
-                self.doplot(savstring)
+            cmdstring = connection.recv(1024)
+            savstring += cmdstring
+            #print cmdstring
+            # print savstring
+            if not cmdstring: break
+        connection.close()
+        if savstring:
+            thread.start_new_thread(doplot, (savstring,))
+            #self.doplot(savstring)
 
-    def doplot(self, cmdstring):
-        cmdstring = pickle.loads(cmdstring)
+def doplot(cmdstring):
+    cmdstring = pickle.loads(cmdstring)
+    print cmdstring
+    try:
+        #curfig = plt.gcf()
+        #if not curfig:
+        #    plt.figure(1)
+        #plt.ioff()
+        plt.figure()
         plt.plot(*cmdstring['args'], **cmdstring['kwargs'])
-
+        plt.draw()
+        plt.show()
+        plt.ioff()
+        #plt.close()
+    except:
+        print "Error: "
+        #plt.close()
+        
 
 if __name__ == '__main__':
-    remX = remoteXserver()
+    startserver()
