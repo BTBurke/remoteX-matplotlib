@@ -35,5 +35,5 @@ class remoteXclient:
 
 if __name__ == '__main__':
     remX = remoteXclient()
-    remX.plot(range(10),range(5),linewidth=0.5)
+    remX.plot(range(20),range(20),linewidth=0.5)
 
