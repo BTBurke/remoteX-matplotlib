@@ -7,8 +7,6 @@ To use:
 2.  Import remoteXclient.py on your development machine.  Issue commands from the matplotlib.pyplot module as normal, using the methods in remoteXclient.
 
 Set up with SSH port forwarding:
-
 This will use SSH port forwarding to establish the connection between client and server:
-
 ssh user@example.com -R 9898:127.0.0.1:9898
 
