@@ -8,10 +8,12 @@ import matplotlib.pyplot as plt
 #class remoteXserver:
 
 def startserver(ip='', port=9898):
+    """
+    Starts server on local machine and accepts pickled matplotlib.pyplot commands    """
     socketobj = socket(AF_INET, SOCK_STREAM)
     socketobj.bind((ip,port))
     socketobj.listen(5)
-
+    print "Server listening on port %d" % port
         
     while True:
         connection, address = socketobj.accept()
@@ -19,32 +21,24 @@ def startserver(ip='', port=9898):
         while True:
             cmdstring = connection.recv(1024)
             savstring += cmdstring
-            #print cmdstring
-            # print savstring
             if not cmdstring: break
         connection.close()
         if savstring:
             thread.start_new_thread(doplot, (savstring,))
-            #self.doplot(savstring)
 
 def doplot(cmdstring):
+    """
+    In a new thread, unpickle the command and sent to matplotlib for action.  All matplotlib.pyplot commands are supported.
+    """
     cmdstring = pickle.loads(cmdstring)
-    print cmdstring
     try:
-        #curfig = plt.gcf()
-        #if not curfig:
-        #    plt.figure(1)
-        #plt.ioff()
-        plt.figure()
-        plt.plot(*cmdstring['args'], **cmdstring['kwargs'])
-        plt.draw()
-        plt.show()
-        plt.ioff()
-        #plt.close()
-    except:
-        print "Error: "
+        func = cmdstring['func']
+        print "Processed ", len(cmdstring['args']), " arguments for the ", func, "function"
+        print len(cmdstring['args'])
+        plt.__dict__[func](*cmdstring['args'], **cmdstring['kwargs'])
+    except Exception as errordetail:
+        print "Error: ", errordetail
         #plt.close()
         
-
 if __name__ == '__main__':
     startserver()
