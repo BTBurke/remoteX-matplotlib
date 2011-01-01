@@ -8,8 +8,20 @@ class remoteXclient:
     def __init__(self):
         self.socketup()
         if not self.serverup:
-            print "RemoteX Client: server not found.  Using X11 forwarding."
+            print "RemoteX Client: server not found. Please start the server on your local machine."
         self.socketdown()
+
+    def __getattr__(self, func):
+        def interceptmethod(*args, **kwargs):
+            self.socketup()
+            cmdstring = {'func': func, 'args': args, 'kwargs': kwargs}
+            if self.serverup:
+                self.socketobj.send(pickle.dumps(cmdstring,2))
+                self.socketdown()
+            else:
+                print "RemoteX Client: server is down, cannot forward."
+                print cmdstring
+        return interceptmethod
 
     def socketup(self, ip='', port=9898):
         self.socketobj = socket(AF_INET, SOCK_STREAM)
@@ -18,17 +30,6 @@ class remoteXclient:
             self.serverup = True
         except:
             self.serverup = False
-
-
-    def plot(self, *args, **kwargs):
-
-        self.socketup()
-        if self.serverup:
-            cmdstring = {'args': args, 'kwargs': kwargs}
-            self.socketobj.send(pickle.dumps(cmdstring,2))
-            self.socketdown()
-        else:
-            print "RemoteX Client: server is down, cannot forward."
         
     def socketdown(self):
         self.socketobj.close()
