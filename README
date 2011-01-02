@@ -4,9 +4,10 @@ This library is meant to be used when development occurs on a remote machine, bu
 
 To use:
 1.  Run remoteXserver.py on your local machine
-2.  Import remoteXclient.py on your development machine.  Issue commands from the matplotlib.pyplot module as normal, using the methods in remoteXclient.
+2.  Import remoteXclient.py on your development machine.  Issue commands from the matplotlib.pyplot module as normal, using the methods in remoteXclient. 
 
 Set up with SSH port forwarding:
 This will use SSH port forwarding to establish the connection between client and server:
 ssh user@example.com -R 9898:127.0.0.1:9898
 
+Note to Windows users --- this script will probably not work unless you run it under Cygwin because the server forks to handle client connections.
